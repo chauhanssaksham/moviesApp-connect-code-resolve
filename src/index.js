@@ -51,7 +51,9 @@ class Provider extends React.Component {
 }
 
 // const connectedComponent = connect(callback)(App);
-export function connect(callback) {
+export function connect(callback = (state)=>({})) { 
+    /*callback function should be given a default value as a funtion that
+     returns an empty object on being called */
   return function (Component) {
     class ConnectedComponent extends React.Component {
       constructor(props) {
@@ -65,20 +67,26 @@ export function connect(callback) {
         this.unsubscribe();
       }
       render() {
-        const { store } = this.props;
+        /* destructure the props this component recieves into 2, 
+        since we shouldn't be passing the store to the Component
+         calling the connect function, for abstraction reasons */
+        const { store, ...restProps } = this.props;
         const state = store.getState();
-        const dataToBeSentAsProps = callback(state);
+        let dataToBeSentAsProps = callback(state);
 
-        return <Component dispatch={store.dispatch} {...dataToBeSentAsProps} />;
+        return <Component dispatch={store.dispatch} {...dataToBeSentAsProps} {...restProps} />;
       }
     }
 
     class ConnectedComponentWrapper extends React.Component {
       render() {
+        /** Pass any props the top-level ConnectedComponentWrapper recieves,
+         *  to the ConnectedComponent, which will separate the rest of the props and the 'store'
+         * and pass the rest of the props to the Component calling the connect function  */   
         return (
           <StoreContext.Consumer>
             {(store) => {
-              return <ConnectedComponent store={store} />;
+              return <ConnectedComponent store={store} {...this.props} /*Passing the props*/ />; 
             }}
           </StoreContext.Consumer>
         );

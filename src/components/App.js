@@ -32,7 +32,7 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <Navbar search={search} />
+        <Navbar />
         <div className="main">
           <div className="tabs">
             <div
@@ -54,7 +54,6 @@ class App extends React.Component {
               <MovieCard
                 movie={movie}
                 key={movie.imdbID}
-                dispatch={this.props.dispatch}
                 isFavourite={this.isMovieInFavourites(movie)}
               />
             ))}
